@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import UploadMedia from '../components/UploadMedia'
-import { Alert, Box, Button, Snackbar } from '@mui/material'
+import { Alert, Box, Button, Snackbar, Typography } from '@mui/material'
 import { config } from '../config/apiConfig';
 import authAxios from '../config/axiosConfig';
 import Gallery from '../components/Gallery';
@@ -8,6 +8,7 @@ import AuthContext from '../context/AuthContext';
 
 function Home() {
   const {state, dispatch} = useContext(AuthContext);
+  const user = state.user;
   const userMedia = state.userMedia;
   const totalRecords = state.totalRecords;
   const lastPage = state.lastPage;
@@ -56,13 +57,13 @@ function Home() {
       console.log('res fetch:', res)
       const files = res.data.data;
       // setUserMedia(files);
-      dispatch({ 
-        type: 'STORE_USER_MEDIA', 
+      dispatch({
+        type: 'STORE_USER_MEDIA',
         payload: {
-          files, 
+          files,
           totalRecords: res.data.total,
           lastPage: res.data.lastPage
-        } 
+        }
       });
     } catch (error) {
       console.error('error while fetching user files', error);
@@ -88,17 +89,18 @@ function Home() {
     setPage(newPage);
   }
 
-  useEffect(() => {
-    fetchUserFiles();
-  }, []);
+  // useEffect(() => {
+  //   fetchUserFiles();
+  // }, [state.isAuth]);
 
   useEffect(() => {
     fetchUserFiles();
   }, [page]);
-  
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+        <Typography variant='h6' sx={{ mr: 2 }}>Welcome {user.name}</Typography>
         <Button onClick={()=>setOpen('uploadNew')} variant='contained' sx={{ mr: 2 }}>upload new media</Button>
         <Button onClick={()=>dispatch({ type: 'LOGOUT' })} variant='contained' sx={{}}>Logout</Button>
       </Box>

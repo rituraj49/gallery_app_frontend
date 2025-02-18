@@ -1,4 +1,6 @@
 import { createContext, useEffect, useReducer } from "react";
+import authAxios from "../config/axiosConfig";
+import { config } from "../config/apiConfig";
 
 const AuthContext = createContext();
 
@@ -26,16 +28,51 @@ const removeUserFromLocalStorage = () => {
     localStorage.removeItem('token');
 }
 
+const fetchUserFiles = async () => {
+    try {
+      const res = await authAxios.get(`${config.baseUrl}/api/v1/media/fetch`);
+      console.log('res fetch:', res)
+      const files = res.data.data;
+      return res.data;
+      // setUserMedia(files);
+    //   dispatch({ 
+    //     type: 'STORE_USER_MEDIA', 
+    //     payload: {
+    //       files, 
+    //       totalRecords: res.data.total,
+    //       lastPage: res.data.lastPage
+    //     } 
+    //   });
+    } catch (error) {
+      console.error('error while fetching user files', error);
+    //   setErrorMessage(error.response?.data?.message || 'Something went wrong');
+    }
+  }
+
 const authenticateUser = (state, action) => {
     // console.log('auth user action:', action.payload)
-    if(action.type === 'LOGIN') {
+
+    if(action.type === 'SIGNUP') {
         addUserToLocalStorage(action.payload.user, action.payload.access_token);
         return {
             ...state,
             isAuth: true,
             user: action.payload.user,
             userToken: action.payload.access_token,
+        }
+    }
+    if(action.type === 'LOGIN') {
+        addUserToLocalStorage(action.payload.user, action.payload.access_token);
+        const userMediaFiles = fetchUserFiles();
+        return {
+            ...state,
+            isAuth: true,
+            user: action.payload.user,
+            userToken: action.payload.access_token,
             // loading: true
+            userMedia: userMediaFiles.data, 
+            totalRecords: userMediaFiles.totalRecords,
+            lastPage: userMediaFiles.lastPage
         }
     }
 
@@ -47,15 +84,17 @@ const authenticateUser = (state, action) => {
             user: null,
             userToken: null,
             // loading: false
-            userMedia: []
+            userMedia: [],
+            totalRecords: 0,
+            lastPage: 0
         }
     }
 
     if(action.type === 'STORE_USER_MEDIA') {
         console.log('files in reducer:', action.payload)
         console.log('state media in reducer:', state.userMedia)
-        const existingFileIds = new Set(state.userMedia.map(file => file._id));
-        const newFiles = action.payload.files.filter(file => !existingFileIds.has(file._id));
+        // const existingFileIds = new Set(state.userMedia.map(file => file._id));
+        // const newFiles = action.payload.files.filter(file => !existingFileIds.has(file._id));
         
         return {
             ...state,

@@ -52,6 +52,14 @@ function Gallery(props) {
         {/* <Button onClick={()=>console.log(userMedia)}>media</Button> */}
         <Grid container spacing={2}>
             {
+                userMedia && userMedia.length === 0 &&
+                 <Grid item xs={12}>
+                    <Typography variant="h6" align="center" color="textSecondary">
+                        There is no media present. Start uploading now!
+                    </Typography>
+                </Grid>
+            }
+            {
                 userMedia && userMedia.length > 0 && userMedia.map((file, index) => (
                     <Grid item xs={6} sm={4} md={3} key={index} 
                     sx={{ 
@@ -93,7 +101,10 @@ function Gallery(props) {
                 // })
             }
         </Grid>
-        <Pagination count={lastPage} page={page} onChange={onPageChange} />
+        {
+            userMedia && userMedia.length > 0 && 
+            <Pagination count={lastPage} page={page} onChange={onPageChange} />
+        }
         <Dialog
             open={open === 'deleteConfirm'}
             onClose={() => setOpen('')}

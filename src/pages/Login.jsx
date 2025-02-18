@@ -5,7 +5,7 @@ import { useContext } from 'react';
 import AuthContext from '../context/AuthContext';
 import axios from 'axios';
 import { config } from '../config/apiConfig';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
     const { dispatch, state } = useContext(AuthContext);
@@ -65,7 +65,6 @@ function Login() {
     };
   return (
     <Container maxWidth="xs">
-        <Button onClick={()=>console.log(state)}>state</Button>
             <Typography variant="h4" align="center">Login</Typography>
             <form onSubmit={handleLogin}>
                 <TextField
@@ -113,6 +112,16 @@ function Login() {
                     fullWidth
                 >
                     Login
+                </Button>
+                <Button
+                    variant="outlined"
+                    color="primary"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                    component={Link}
+                    to="/register"
+                >
+                    Click to register
                 </Button>
             </form>
             <Snackbar
